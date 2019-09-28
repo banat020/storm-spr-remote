@@ -3,9 +3,12 @@
 <configuration>
 	<!-- 定义常量 -->
 	
-	<!--  本机测试环境  -->
-	<property name="log_dir" value="D:/logback_log_fold/logs/settlement" />
+	<!--  本机测试环境  
+	<property name="log_dir" value="D:/logback_log_fold/logs/storm_spr_local" />
+	-->
 	
+	<!--  生产环境  -->
+	<property name="log_dir" value="/usr/localdata/storm/logs/storm_spr_remote" />
 	
 	<property name="maxHistory" value="90" />
 	<property name="appName" value="storm_local" />
