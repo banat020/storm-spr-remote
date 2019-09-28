@@ -30,10 +30,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 			<exclusions>
-				<exclusion>  <!--有且只有两种方式：1、仅排除starter的log，保留Storm的log。  2、同时排除starter的log与Storm的log 。 建议选用第2种方式 -->    
+				<exclusion>  <!--生产环境中，只能排除starter的log -->    
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
+				<exclusion>
+		            <groupId>ch.qos.logback</groupId>
+		            <artifactId>logback-classic</artifactId>
+		        </exclusion>
 			</exclusions>
 			
 		</dependency>
@@ -42,23 +46,8 @@
 		    <groupId>org.apache.storm</groupId>
 		    <artifactId>storm-core</artifactId>
 		    <version>1.0.6</version>
-		    <!-- 如果是测试环境，应该修改为compile。这里是生产环境，不能在发布包中包括storm资源包 -->
-		    <scope>provide</scope>
-		    
-		    <exclusions>
-		    	<exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-1.2-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-		    </exclusions>
+		    <!-- 如果是测试环境，应该修改为compile，并且还在排除一些log包。但是，这里是生产环境，不能在发布包中包括storm资源包 -->
+		    <scope>provided</scope>
 		     
 		</dependency>
 
@@ -71,7 +60,16 @@
 
 	<build>
 		<plugins>
-			
+			<!-- Maven Install时排除测试 -->
+		   <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-surefire-plugin</artifactId>
+		            <configuration>
+		                <testFailureIgnore>true</testFailureIgnore>
+						<skipTests>true</skipTests>
+		            </configuration>
+		    </plugin>
+		    
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -122,6 +120,14 @@
                             </excludes>
                         </filter>
                     </filters>
+                     
+                     <!-- 打包时，排除slf4j。因为，别的资源包也可能包括日志。因此，排除。 -->
+                     <artifactSet>
+                        <excludes>
+                            <exclude>org.slf4j:slf4j-api</exclude>
+                            <exclude>org.apache.logging.log4j:log4j-slf4j-impl</exclude>
+                        </excludes>
+                    </artifactSet>
                      
                 </configuration>
                 <executions>

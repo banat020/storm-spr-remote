@@ -41,7 +41,7 @@ public class RemoteStorm {
 		
 		//远程模式
 		try {
-			StormSubmitter.submitTopology("REMOTE_SETTLE_UNIONCOM_ALL_IN_ONE_TOPOLOGY", config, builder.createTopology());
+			StormSubmitter.submitTopology("REMOTE_TOPOLOGY", config, builder.createTopology());
 		} catch (AlreadyAliveException | InvalidTopologyException | AuthorizationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
